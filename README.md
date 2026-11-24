@@ -6,7 +6,6 @@ Detection runs on your own machine (YOLO11 + ByteTrack). Video never leaves the 
 text search phrase is sent to YouTube when you select an object (and only if you set an API key).
 
 ![demo](docs/screenshot_demo.png)
-*(Layout demo drawn from a synthetic video. Replace with a real screenshot of your own.)*
 
 ## Quick start (Arch Linux)
 

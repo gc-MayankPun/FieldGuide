@@ -1,5 +1,5 @@
 
-"""Modern guidance and YouTube tutorial panel."""
+"""Guidance panel with object instructions, speech controls and YouTube tutorials."""
 from __future__ import annotations
 
 import html
@@ -21,6 +21,7 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QVBoxLayout,
     QWidget,
+    QStyle,
 )
 
 from ..models import Entry, Video
@@ -58,19 +59,8 @@ QLabel#confidence {
     font-weight: bold;
 }
 
-QLabel#sectionTitle {
-    font-size: 13px;
-    font-weight: 700;
-}
-
-QLabel#description {
-    font-size: 12px;
-    line-height: 150%;
-}
-
 QLabel#body {
     font-size: 12px;
-    line-height: 150%;
 }
 
 QFrame#separator {
@@ -103,6 +93,26 @@ QLabel#recommended {
     color: #16845b;
     font-size: 9px;
     font-weight: bold;
+}
+
+QPushButton#speakButton {
+    background: palette(base);
+    color: palette(window-text);
+    border: 1px solid #2699b5;
+    border-radius: 6px;
+    padding: 9px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: left;
+}
+
+QPushButton#speakButton:hover {
+    background: palette(alternate-base);
+}
+
+QPushButton#speakButton:disabled {
+    color: palette(mid);
+    border-color: palette(mid);
 }
 
 QPushButton#searchButton {
@@ -158,6 +168,7 @@ class VideoCard(QFrame):
         super().__init__(parent)
 
         self.url = video.url
+
         self.setObjectName("videoCard")
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.setSizePolicy(
@@ -189,11 +200,13 @@ class VideoCard(QFrame):
         self.video_title.setObjectName("videoTitle")
         self.video_title.setWordWrap(True)
         self.video_title.setMaximumHeight(48)
+
         details.addWidget(self.video_title)
 
         self.channel = QLabel(video.channel.strip() or "YouTube")
         self.channel.setObjectName("channel")
         self.channel.setWordWrap(True)
+
         details.addWidget(self.channel)
 
         if video.curated:
@@ -205,16 +218,14 @@ class VideoCard(QFrame):
 
         layout.addLayout(details, 1)
 
-        # Let clicks on child labels reach the card.
-        self.thumbnail.setAttribute(
-            Qt.WidgetAttribute.WA_TransparentForMouseEvents
-        )
-        self.video_title.setAttribute(
-            Qt.WidgetAttribute.WA_TransparentForMouseEvents
-        )
-        self.channel.setAttribute(
-            Qt.WidgetAttribute.WA_TransparentForMouseEvents
-        )
+        for widget in (
+            self.thumbnail,
+            self.video_title,
+            self.channel,
+        ):
+            widget.setAttribute(
+                Qt.WidgetAttribute.WA_TransparentForMouseEvents
+            )
 
     def set_thumbnail(self, pixmap: QPixmap):
         if pixmap.isNull():
@@ -251,6 +262,8 @@ class VideoCard(QFrame):
 
 class SidePanel(QWidget):
 
+    speak_requested = Signal(str, list)
+
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -259,12 +272,19 @@ class SidePanel(QWidget):
         self.setStyleSheet(STYLE)
 
         self._search_url = ""
+        self._speech_title = ""
+        self._speech_steps: list[str] = []
+
         self._network = QNetworkAccessManager(self)
         self._thumbnail_replies = {}
 
+        # --------------------------------------------------
+        # Main layout
+        # --------------------------------------------------
+
         root = QVBoxLayout(self)
-        root.setContentsMargins(20, 20, 16, 16)
-        root.setSpacing(16)
+        root.setContentsMargins(20, 18, 16, 16)
+        root.setSpacing(14)
 
         # --------------------------------------------------
         # Header
@@ -272,6 +292,7 @@ class SidePanel(QWidget):
 
         eyebrow = QLabel("FIELDGUIDE  /  OBJECT DETAILS")
         eyebrow.setObjectName("eyebrow")
+
         root.addWidget(eyebrow)
 
         header = QHBoxLayout()
@@ -286,7 +307,11 @@ class SidePanel(QWidget):
         self.confidence.hide()
 
         header.addWidget(self.title, 1)
-        header.addWidget(self.confidence, 0, Qt.AlignmentFlag.AlignTop)
+        header.addWidget(
+            self.confidence,
+            0,
+            Qt.AlignmentFlag.AlignTop,
+        )
 
         root.addLayout(header)
 
@@ -296,14 +321,17 @@ class SidePanel(QWidget):
 
         self.scroll = QScrollArea()
         self.scroll.setWidgetResizable(True)
+
         self.scroll.setHorizontalScrollBarPolicy(
             Qt.ScrollBarPolicy.ScrollBarAlwaysOff
         )
+
         self.scroll.setVerticalScrollBarPolicy(
             Qt.ScrollBarPolicy.ScrollBarAsNeeded
         )
 
         self.content = QWidget()
+
         self.content.setSizePolicy(
             QSizePolicy.Policy.Expanding,
             QSizePolicy.Policy.Preferred,
@@ -311,25 +339,66 @@ class SidePanel(QWidget):
 
         self.content_layout = QVBoxLayout(self.content)
         self.content_layout.setContentsMargins(0, 0, 5, 0)
-        self.content_layout.setSpacing(18)
+        self.content_layout.setSpacing(14)
 
-        # Description and instructions
+        # --------------------------------------------------
+        # Object description and instructions
+        # --------------------------------------------------
+
         self.body = QLabel()
         self.body.setObjectName("body")
         self.body.setWordWrap(True)
         self.body.setTextFormat(Qt.TextFormat.RichText)
         self.body.setAlignment(Qt.AlignmentFlag.AlignTop)
+
         self.body.setTextInteractionFlags(
             Qt.TextInteractionFlag.TextSelectableByMouse
         )
 
         self.content_layout.addWidget(self.body)
 
+        # --------------------------------------------------
+        # Speech button
+        # --------------------------------------------------
+
+        self.speak_button = QPushButton("  Listen to instructions")
+
+        self.speak_button.setObjectName("speakButton")
+
+        self.speak_button.setIcon(
+            self.style().standardIcon(
+                QStyle.StandardPixmap.SP_MediaPlay
+            )
+        )
+
+        self.speak_button.setCursor(
+            Qt.CursorShape.PointingHandCursor
+        )
+
+        self.speak_button.setFixedHeight(40)
+
+        self.speak_button.setEnabled(False)
+        self.speak_button.hide()
+
+        self.speak_button.clicked.connect(self._request_speech)
+
+        # IMPORTANT: Actually add the button to the layout.
+        self.content_layout.addWidget(self.speak_button)
+
+        # --------------------------------------------------
+        # Tutorial separator
+        # --------------------------------------------------
+
         self.separator = self._separator()
+
         self.content_layout.addWidget(self.separator)
 
+        # --------------------------------------------------
         # Tutorial section
+        # --------------------------------------------------
+
         self.tutorial_section = QWidget()
+
         self.tutorial_layout = QVBoxLayout(self.tutorial_section)
         self.tutorial_layout.setContentsMargins(0, 0, 0, 0)
         self.tutorial_layout.setSpacing(9)
@@ -344,11 +413,13 @@ class SidePanel(QWidget):
 
         self.video_count = QLabel()
         self.video_count.setObjectName("channel")
+
         tutorial_header.addWidget(self.video_count)
 
         self.tutorial_layout.addLayout(tutorial_header)
 
         self.videos = QWidget()
+
         self.videos_layout = QVBoxLayout(self.videos)
         self.videos_layout.setContentsMargins(0, 0, 0, 0)
         self.videos_layout.setSpacing(8)
@@ -358,36 +429,89 @@ class SidePanel(QWidget):
         self.note = QLabel()
         self.note.setObjectName("channel")
         self.note.setWordWrap(True)
+
         self.tutorial_layout.addWidget(self.note)
 
         self.content_layout.addWidget(self.tutorial_section)
         self.content_layout.addStretch()
 
         self.scroll.setWidget(self.content)
+
         root.addWidget(self.scroll, 1)
 
         # --------------------------------------------------
         # Footer
         # --------------------------------------------------
 
-        self.search_btn = QPushButton("Search more on YouTube  ↗")
+        self.search_btn = QPushButton(
+            "Search more on YouTube  ↗"
+        )
+
         self.search_btn.setObjectName("searchButton")
-        self.search_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+
+        self.search_btn.setCursor(
+            Qt.CursorShape.PointingHandCursor
+        )
+
         self.search_btn.clicked.connect(self._open_search)
 
         root.addWidget(self.search_btn)
 
         self.show_idle()
 
-    # --------------------------------------------------
+    # ------------------------------------------------------
+    # Speech controls
+    # ------------------------------------------------------
+
+    def _request_speech(self):
+        """Request playback or stop through MainWindow."""
+
+        if not self._speech_steps:
+            return
+
+        self.speak_requested.emit(
+            self._speech_title,
+            self._speech_steps,
+        )
+
+    def set_speech_state(self, speaking: bool):
+        """Synchronize the button with playback state."""
+
+        self.speak_button.setEnabled(not speaking)
+
+        if speaking:
+            self.speak_button.setText("  Reading instructions...")
+        else:
+            self.speak_button.setText("  Listen to instructions")
+
+        icon = (
+            QStyle.StandardPixmap.SP_MediaPlay
+        )
+
+        self.speak_button.setIcon(
+            self.style().standardIcon(icon)
+        )
+
+    def _reset_speech(self):
+        self._speech_title = ""
+        self._speech_steps = []
+
+        self.speak_button.hide()
+        self.speak_button.setEnabled(False)
+
+        self.set_speech_state(False)
+
+    # ------------------------------------------------------
     # Helpers
-    # --------------------------------------------------
+    # ------------------------------------------------------
 
     @staticmethod
     def _separator():
         line = QFrame()
+
         line.setObjectName("separator")
         line.setFrameShape(QFrame.Shape.HLine)
+
         return line
 
     def _clear_video_cards(self):
@@ -401,6 +525,7 @@ class SidePanel(QWidget):
             reply.deleteLater()
 
         while self.videos_layout.count():
+
             item = self.videos_layout.takeAt(0)
             widget = item.widget()
 
@@ -408,16 +533,19 @@ class SidePanel(QWidget):
                 widget.deleteLater()
 
     def _set_videos_visible(self, visible: bool):
+
         self.separator.setVisible(visible)
         self.tutorial_section.setVisible(visible)
         self.search_btn.setVisible(visible)
 
-    # --------------------------------------------------
+    # ------------------------------------------------------
     # Panel states
-    # --------------------------------------------------
+    # ------------------------------------------------------
 
     def show_idle(self):
+
         self._clear_video_cards()
+        self._reset_speech()
 
         self.title.setText("FieldGuide")
         self.confidence.hide()
@@ -435,7 +563,9 @@ class SidePanel(QWidget):
         self._set_videos_visible(False)
 
     def show_message(self, title: str, text: str):
+
         self._clear_video_cards()
+        self._reset_speech()
 
         self.title.setText(title)
         self.confidence.hide()
@@ -452,13 +582,23 @@ class SidePanel(QWidget):
     def show_entry(self, entry: Entry, confidence: float):
 
         self._clear_video_cards()
+        self._reset_speech()
 
         self.title.setText(entry.display_name)
 
         self.confidence.setText(
             f"{int(confidence * 100)}% confidence"
         )
+
         self.confidence.show()
+
+        # Store the selected object's speech instructions.
+        self._speech_title = entry.display_name
+        self._speech_steps = list(entry.steps)
+
+        if self._speech_steps:
+            self.speak_button.setEnabled(True)
+            self.speak_button.show()
 
         parts = []
 
@@ -468,6 +608,7 @@ class SidePanel(QWidget):
             )
 
         if entry.steps:
+
             parts.append(
                 '<p style="font-weight:700; margin-top:18px;">'
                 "HOW TO USE IT</p>"
@@ -484,6 +625,7 @@ class SidePanel(QWidget):
             parts.append("</ol>")
 
         if entry.cautions:
+
             parts.append(
                 '<p style="font-weight:700; margin-top:18px;">'
                 "CAUTION</p>"
@@ -506,13 +648,14 @@ class SidePanel(QWidget):
 
         self._set_videos_visible(True)
 
-    # --------------------------------------------------
+    # ------------------------------------------------------
     # YouTube tutorials
-    # --------------------------------------------------
+    # ------------------------------------------------------
 
     def set_tutorials(self, result: TutorialResult):
 
         self._search_url = result.search_url
+
         self._clear_video_cards()
 
         count = len(result.videos)
@@ -532,17 +675,21 @@ class SidePanel(QWidget):
             self._load_thumbnail(video, card)
 
         if result.videos:
+
             self.note.setText(
-                result.message or "Select a video to start watching."
+                result.message
+                or "Select a video to start watching."
             )
+
         else:
+
             self.note.setText(
                 result.message or "No tutorials found."
             )
 
-    # --------------------------------------------------
+    # ------------------------------------------------------
     # Thumbnail loading
-    # --------------------------------------------------
+    # ------------------------------------------------------
 
     def _load_thumbnail(self, video: Video, card: VideoCard):
 
@@ -552,10 +699,12 @@ class SidePanel(QWidget):
         )
 
         if not url.startswith("https://"):
+
             card.set_thumbnail(QPixmap())
             return
 
         request = QNetworkRequest(QUrl(url))
+
         reply = self._network.get(request)
 
         self._thumbnail_replies[reply] = card
@@ -579,9 +728,9 @@ class SidePanel(QWidget):
 
         reply.deleteLater()
 
-    # --------------------------------------------------
+    # ------------------------------------------------------
     # Actions
-    # --------------------------------------------------
+    # ------------------------------------------------------
 
     @staticmethod
     def _open_video(url: str):
