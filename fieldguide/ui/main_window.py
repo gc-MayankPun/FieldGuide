@@ -4,8 +4,20 @@ from __future__ import annotations
 import threading
 
 from PySide6.QtCore import QObject, QTimer, Qt, Signal
-from PySide6.QtGui import QAction, QKeySequence
-from PySide6.QtWidgets import (QCheckBox, QLabel, QMainWindow, QSlider, QSplitter, QToolBar, QVBoxLayout, QWidget)
+from PySide6.QtGui import (
+    QAction,
+    QKeySequence,
+)
+from PySide6.QtWidgets import (
+    QCheckBox,
+    QLabel,
+    QMainWindow,
+    QSlider,
+    QSplitter,
+    QToolBar,
+    QVBoxLayout,
+    QWidget,
+)
 
 from ..config import Config
 from ..guidance import KnowledgeBase
@@ -15,7 +27,6 @@ from ..speech import SpeechWorker
 from ..tutorials import TutorialResult, TutorialService
 from .side_panel import SidePanel
 from .video_widget import VideoWidget
-
 
 class _Bridge(QObject):
     tutorials_ready = Signal(int, object)   # request id, TutorialResult
@@ -28,7 +39,8 @@ class MainWindow(QMainWindow):
         self.cfg, self.kb, self.tutorials, self.pipeline = cfg, kb, tutorials, pipeline
         self.speech = SpeechWorker()
         self.setWindowTitle("FieldGuide")
-        self.resize(1280, 760)
+        self.resize(1440, 850)
+        self.setMinimumSize(1050, 650)
         self._selected_id = -1
         self._request_id = 0
         self._last_frame_version = -1
@@ -61,6 +73,7 @@ class MainWindow(QMainWindow):
         if not self.speech.available:
             self.voice_box.setToolTip("Install pyttsx3 (and espeak-ng on Linux) to enable speech.")
         tb.addWidget(self.voice_box)
+        tb.addSeparator()
 
         # centre
         self.video = VideoWidget()
@@ -75,11 +88,22 @@ class MainWindow(QMainWindow):
         ll.setContentsMargins(0, 0, 0, 0)
         ll.addWidget(self.banner)
         ll.addWidget(self.video, 1)
-        split = QSplitter()
+        split = QSplitter(Qt.Orientation.Horizontal)
+
+        split.setHandleWidth(5)
+        split.setChildrenCollapsible(False)
+
+        self.panel.setMinimumWidth(340)
+        self.panel.setMaximumWidth(440)
+
         split.addWidget(left)
         split.addWidget(self.panel)
+
         split.setStretchFactor(0, 4)
-        split.setStretchFactor(1, 2)
+        split.setStretchFactor(1, 1)
+
+        split.setSizes([1060, 380])
+
         self.setCentralWidget(split)
 
         self.status = QLabel("Ready.")

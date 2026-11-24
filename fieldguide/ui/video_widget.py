@@ -60,13 +60,28 @@ class VideoWidget(QWidget):
             return
         fw, fh = self._size
         s, ox, oy = fit_rect(fw, fh, self.width(), self.height())
-        p.drawImage(QRectF(ox, oy, fw * s, fh * s), self._image)
+
+        # Mirror the camera preview horizontally.
+        image_rect = QRectF(ox, oy, fw * s, fh * s)
+
+        p.save()
+        p.translate(2 * ox + fw * s, 0)
+        p.scale(-1, 1)
+        p.drawImage(image_rect, self._image)
+        p.restore()
+
         font = QFont(self.font())
         font.setPointSize(10)
         font.setBold(True)
         p.setFont(font)
         for t in self._tracks:
             x1, y1, x2, y2 = box_to_view(t.box, s, ox, oy)
+
+            # Mirror bounding box to match the camera preview.
+            mirror_axis = 2 * ox + fw * s
+
+            x1, x2 = mirror_axis - x2, mirror_axis - x1
+            
             col = label_color(t.label)
             selected = t.id == self._selected
             pen = QPen(col, 4 if selected else 2)
@@ -92,5 +107,9 @@ class VideoWidget(QWidget):
         s, ox, oy = fit_rect(self._size[0], self._size[1], self.width(), self.height())
         pos = event.position()
         fx, fy = view_to_frame(pos.x(), pos.y(), s, ox, oy)
+
+        # Convert mirrored preview coordinates back to original frame coordinates.
+        fx = self._size[0] - fx
+        
         hit = hit_test(self._tracks, fx, fy)
         self.object_clicked.emit(hit.id if hit else -1)

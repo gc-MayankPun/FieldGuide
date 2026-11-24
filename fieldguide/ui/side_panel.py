@@ -1,5 +1,5 @@
 
-"""Guidance + tutorial panel shown on the right of the window."""
+"""Modern guidance and YouTube tutorial panel."""
 from __future__ import annotations
 
 import html
@@ -16,9 +16,9 @@ from PySide6.QtWidgets import (
     QFrame,
     QHBoxLayout,
     QLabel,
-    QListWidget,
-    QListWidgetItem,
     QPushButton,
+    QScrollArea,
+    QSizePolicy,
     QVBoxLayout,
     QWidget,
 )
@@ -27,8 +27,130 @@ from ..models import Entry, Video
 from ..tutorials import TutorialResult
 
 
+STYLE = """
+QWidget#sidePanel {
+    background: palette(window);
+}
+
+QLabel {
+    color: palette(window-text);
+    background: transparent;
+}
+
+QLabel#eyebrow {
+    color: palette(mid);
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+QLabel#objectTitle {
+    font-size: 21px;
+    font-weight: 700;
+}
+
+QLabel#confidence {
+    background: palette(alternate-base);
+    border: 1px solid palette(mid);
+    border-radius: 5px;
+    padding: 5px 8px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+QLabel#sectionTitle {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+QLabel#description {
+    font-size: 12px;
+    line-height: 150%;
+}
+
+QLabel#body {
+    font-size: 12px;
+    line-height: 150%;
+}
+
+QFrame#separator {
+    background: palette(mid);
+    max-height: 1px;
+    border: none;
+}
+
+QFrame#videoCard {
+    background: palette(base);
+    border: 1px solid palette(mid);
+    border-radius: 7px;
+}
+
+QFrame#videoCard:hover {
+    border: 1px solid #2699b5;
+}
+
+QLabel#videoTitle {
+    font-size: 11px;
+    font-weight: 600;
+}
+
+QLabel#channel {
+    color: palette(mid);
+    font-size: 10px;
+}
+
+QLabel#recommended {
+    color: #16845b;
+    font-size: 9px;
+    font-weight: bold;
+}
+
+QPushButton#searchButton {
+    background: palette(base);
+    color: palette(window-text);
+    border: 1px solid palette(mid);
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+QPushButton#searchButton:hover {
+    border-color: #2699b5;
+    background: palette(alternate-base);
+}
+
+QScrollArea {
+    border: none;
+    background: transparent;
+}
+
+QScrollBar:vertical {
+    background: transparent;
+    width: 7px;
+    margin: 2px;
+}
+
+QScrollBar::handle:vertical {
+    background: palette(mid);
+    border-radius: 3px;
+    min-height: 30px;
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    background: transparent;
+}
+"""
+
+
 class VideoCard(QFrame):
-    """Clickable YouTube tutorial card with thumbnail."""
+    """Clickable YouTube video card."""
 
     clicked = Signal(str)
 
@@ -36,94 +158,67 @@ class VideoCard(QFrame):
         super().__init__(parent)
 
         self.url = video.url
-
         self.setObjectName("videoCard")
         self.setCursor(Qt.CursorShape.PointingHandCursor)
-
-        self.setStyleSheet("""
-            QFrame#videoCard {
-                background: palette(base);
-                border: 1px solid palette(mid);
-                border-radius: 8px;
-            }
-
-            QFrame#videoCard:hover {
-                border: 1px solid #2699b5;
-                background: palette(alternate-base);
-            }
-        """)
+        self.setSizePolicy(
+            QSizePolicy.Policy.Expanding,
+            QSizePolicy.Policy.Fixed,
+        )
 
         layout = QHBoxLayout(self)
         layout.setContentsMargins(8, 8, 8, 8)
         layout.setSpacing(10)
 
-        # Thumbnail
-        self.thumbnail = QLabel("Loading thumbnail...")
+        self.thumbnail = QLabel("Loading...")
+        self.thumbnail.setFixedSize(120, 76)
         self.thumbnail.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.thumbnail.setFixedSize(144, 81)
         self.thumbnail.setWordWrap(True)
-
         self.thumbnail.setStyleSheet("""
             background: #252525;
             color: white;
-            border: none;
             border-radius: 5px;
             font-size: 10px;
         """)
 
         layout.addWidget(self.thumbnail)
 
-        # Video information
         details = QVBoxLayout()
         details.setSpacing(5)
 
         self.video_title = QLabel(video.title)
+        self.video_title.setObjectName("videoTitle")
         self.video_title.setWordWrap(True)
-        self.video_title.setMaximumHeight(42)
-
-        self.video_title.setStyleSheet("""
-            font-weight: 600;
-            font-size: 12px;
-            border: none;
-            background: transparent;
-        """)
-
+        self.video_title.setMaximumHeight(48)
         details.addWidget(self.video_title)
 
-        channel = video.channel.strip() or "YouTube"
-
-        self.channel = QLabel(channel)
+        self.channel = QLabel(video.channel.strip() or "YouTube")
+        self.channel.setObjectName("channel")
         self.channel.setWordWrap(True)
-
-        self.channel.setStyleSheet("""
-            color: #888888;
-            font-size: 11px;
-            border: none;
-            background: transparent;
-        """)
-
         details.addWidget(self.channel)
 
         if video.curated:
             recommended = QLabel("RECOMMENDED")
-
-            recommended.setStyleSheet("""
-                color: #16845b;
-                font-size: 9px;
-                font-weight: bold;
-                border: none;
-                background: transparent;
-            """)
-
+            recommended.setObjectName("recommended")
             details.addWidget(recommended)
 
         details.addStretch()
 
         layout.addLayout(details, 1)
 
+        # Let clicks on child labels reach the card.
+        self.thumbnail.setAttribute(
+            Qt.WidgetAttribute.WA_TransparentForMouseEvents
+        )
+        self.video_title.setAttribute(
+            Qt.WidgetAttribute.WA_TransparentForMouseEvents
+        )
+        self.channel.setAttribute(
+            Qt.WidgetAttribute.WA_TransparentForMouseEvents
+        )
+
     def set_thumbnail(self, pixmap: QPixmap):
         if pixmap.isNull():
-            self.thumbnail.setText("Thumbnail unavailable")
+            self.thumbnail.setText("Preview unavailable")
             return
 
         scaled = pixmap.scaled(
@@ -132,15 +227,8 @@ class VideoCard(QFrame):
             Qt.TransformationMode.SmoothTransformation,
         )
 
-        x = max(
-            0,
-            (scaled.width() - self.thumbnail.width()) // 2
-        )
-
-        y = max(
-            0,
-            (scaled.height() - self.thumbnail.height()) // 2
-        )
+        x = max(0, (scaled.width() - self.thumbnail.width()) // 2)
+        y = max(0, (scaled.height() - self.thumbnail.height()) // 2)
 
         self.thumbnail.setPixmap(
             scaled.copy(
@@ -150,8 +238,6 @@ class VideoCard(QFrame):
                 self.thumbnail.height(),
             )
         )
-
-        self.thumbnail.setText("")
 
     def mouseReleaseEvent(self, event):
         if (
@@ -168,95 +254,211 @@ class SidePanel(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.setMinimumWidth(320)
+        self.setObjectName("sidePanel")
+        self.setMinimumWidth(300)
+        self.setStyleSheet(STYLE)
 
         self._search_url = ""
-
-        # Asynchronous thumbnail downloading
         self._network = QNetworkAccessManager(self)
         self._thumbnail_replies = {}
 
-        layout = QVBoxLayout(self)
-        layout.setSpacing(8)
+        root = QVBoxLayout(self)
+        root.setContentsMargins(20, 20, 16, 16)
+        root.setSpacing(16)
 
-        self.title = QLabel()
-        self.title.setStyleSheet(
-            "font-size: 18px; font-weight: bold;"
-        )
+        # --------------------------------------------------
+        # Header
+        # --------------------------------------------------
+
+        eyebrow = QLabel("FIELDGUIDE  /  OBJECT DETAILS")
+        eyebrow.setObjectName("eyebrow")
+        root.addWidget(eyebrow)
+
+        header = QHBoxLayout()
+        header.setSpacing(8)
+
+        self.title = QLabel("FieldGuide")
+        self.title.setObjectName("objectTitle")
         self.title.setWordWrap(True)
 
+        self.confidence = QLabel()
+        self.confidence.setObjectName("confidence")
+        self.confidence.hide()
+
+        header.addWidget(self.title, 1)
+        header.addWidget(self.confidence, 0, Qt.AlignmentFlag.AlignTop)
+
+        root.addLayout(header)
+
+        # --------------------------------------------------
+        # Scrollable content
+        # --------------------------------------------------
+
+        self.scroll = QScrollArea()
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setHorizontalScrollBarPolicy(
+            Qt.ScrollBarPolicy.ScrollBarAlwaysOff
+        )
+        self.scroll.setVerticalScrollBarPolicy(
+            Qt.ScrollBarPolicy.ScrollBarAsNeeded
+        )
+
+        self.content = QWidget()
+        self.content.setSizePolicy(
+            QSizePolicy.Policy.Expanding,
+            QSizePolicy.Policy.Preferred,
+        )
+
+        self.content_layout = QVBoxLayout(self.content)
+        self.content_layout.setContentsMargins(0, 0, 5, 0)
+        self.content_layout.setSpacing(18)
+
+        # Description and instructions
         self.body = QLabel()
+        self.body.setObjectName("body")
         self.body.setWordWrap(True)
         self.body.setTextFormat(Qt.TextFormat.RichText)
         self.body.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.body.setTextInteractionFlags(
+            Qt.TextInteractionFlag.TextSelectableByMouse
+        )
 
-        self.videos_title = QLabel("<b>Tutorial videos</b>")
+        self.content_layout.addWidget(self.body)
 
-        self.videos = QListWidget()
-        self.videos.setWordWrap(True)
-        self.videos.setSpacing(6)
-        self.videos.setFrameShape(QFrame.Shape.NoFrame)
+        self.separator = self._separator()
+        self.content_layout.addWidget(self.separator)
 
-        self.videos.setStyleSheet("""
-            QListWidget {
-                background: transparent;
-                border: none;
-            }
+        # Tutorial section
+        self.tutorial_section = QWidget()
+        self.tutorial_layout = QVBoxLayout(self.tutorial_section)
+        self.tutorial_layout.setContentsMargins(0, 0, 0, 0)
+        self.tutorial_layout.setSpacing(9)
 
-            QListWidget::item {
-                border: none;
-                padding: 2px;
-            }
-        """)
+        tutorial_header = QHBoxLayout()
+
+        self.videos_title = QLabel("VIDEO TUTORIALS")
+        self.videos_title.setObjectName("eyebrow")
+
+        tutorial_header.addWidget(self.videos_title)
+        tutorial_header.addStretch()
+
+        self.video_count = QLabel()
+        self.video_count.setObjectName("channel")
+        tutorial_header.addWidget(self.video_count)
+
+        self.tutorial_layout.addLayout(tutorial_header)
+
+        self.videos = QWidget()
+        self.videos_layout = QVBoxLayout(self.videos)
+        self.videos_layout.setContentsMargins(0, 0, 0, 0)
+        self.videos_layout.setSpacing(8)
+
+        self.tutorial_layout.addWidget(self.videos)
 
         self.note = QLabel()
+        self.note.setObjectName("channel")
         self.note.setWordWrap(True)
-        self.note.setStyleSheet("color: #777;")
+        self.tutorial_layout.addWidget(self.note)
 
-        self.search_btn = QPushButton("Open YouTube search")
+        self.content_layout.addWidget(self.tutorial_section)
+        self.content_layout.addStretch()
+
+        self.scroll.setWidget(self.content)
+        root.addWidget(self.scroll, 1)
+
+        # --------------------------------------------------
+        # Footer
+        # --------------------------------------------------
+
+        self.search_btn = QPushButton("Search more on YouTube  ↗")
+        self.search_btn.setObjectName("searchButton")
+        self.search_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.search_btn.clicked.connect(self._open_search)
 
-        for widget in (
-            self.title,
-            self.body,
-            self.videos_title,
-            self.videos,
-            self.note,
-            self.search_btn,
-        ):
-            layout.addWidget(widget)
-
-        layout.setStretchFactor(self.body, 3)
-        layout.setStretchFactor(self.videos, 2)
+        root.addWidget(self.search_btn)
 
         self.show_idle()
+
+    # --------------------------------------------------
+    # Helpers
+    # --------------------------------------------------
+
+    @staticmethod
+    def _separator():
+        line = QFrame()
+        line.setObjectName("separator")
+        line.setFrameShape(QFrame.Shape.HLine)
+        return line
+
+    def _clear_video_cards(self):
+
+        replies = list(self._thumbnail_replies)
+
+        self._thumbnail_replies.clear()
+
+        for reply in replies:
+            reply.abort()
+            reply.deleteLater()
+
+        while self.videos_layout.count():
+            item = self.videos_layout.takeAt(0)
+            widget = item.widget()
+
+            if widget:
+                widget.deleteLater()
+
+    def _set_videos_visible(self, visible: bool):
+        self.separator.setVisible(visible)
+        self.tutorial_section.setVisible(visible)
+        self.search_btn.setVisible(visible)
 
     # --------------------------------------------------
     # Panel states
     # --------------------------------------------------
 
     def show_idle(self):
+        self._clear_video_cards()
+
         self.title.setText("FieldGuide")
+        self.confidence.hide()
 
         self.body.setText(
-            "Point the camera at an object. When its box "
-            "turns solid, click it to see how to use it "
-            "and to find tutorial videos."
+            "<p>Welcome to FieldGuide.</p>"
+            "<p>Point your camera at an object. "
+            "When its detection box turns solid, click it "
+            "to explore instructions and useful tutorials.</p>"
         )
+
+        self.note.clear()
+        self.video_count.clear()
 
         self._set_videos_visible(False)
 
     def show_message(self, title: str, text: str):
+        self._clear_video_cards()
+
         self.title.setText(title)
-        self.body.setText(html.escape(text))
+        self.confidence.hide()
+
+        self.body.setText(
+            f"<p>{html.escape(text)}</p>"
+        )
+
+        self.note.clear()
+        self.video_count.clear()
 
         self._set_videos_visible(False)
 
     def show_entry(self, entry: Entry, confidence: float):
 
-        self.title.setText(
-            f"{entry.display_name} ({int(confidence * 100)}%)"
+        self._clear_video_cards()
+
+        self.title.setText(entry.display_name)
+
+        self.confidence.setText(
+            f"{int(confidence * 100)}% confidence"
         )
+        self.confidence.show()
 
         parts = []
 
@@ -267,19 +469,31 @@ class SidePanel(QWidget):
 
         if entry.steps:
             parts.append(
-                "<p><b>How to use it</b></p><ol>"
-                + "".join(
-                    f"<li>{html.escape(step)}</li>"
-                    for step in entry.steps
-                )
-                + "</ol>"
+                '<p style="font-weight:700; margin-top:18px;">'
+                "HOW TO USE IT</p>"
             )
+
+            parts.append("<ol>")
+
+            for step in entry.steps:
+                parts.append(
+                    f"<li style='margin-bottom:7px;'>"
+                    f"{html.escape(step)}</li>"
+                )
+
+            parts.append("</ol>")
 
         if entry.cautions:
             parts.append(
-                "<p><b>Caution</b></p><ul>"
+                '<p style="font-weight:700; margin-top:18px;">'
+                "CAUTION</p>"
+            )
+
+            parts.append(
+                "<ul>"
                 + "".join(
-                    f"<li>{html.escape(item)}</li>"
+                    f"<li style='margin-bottom:6px;'>"
+                    f"{html.escape(item)}</li>"
                     for item in entry.cautions
                 )
                 + "</ul>"
@@ -287,31 +501,31 @@ class SidePanel(QWidget):
 
         self.body.setText("".join(parts))
 
-        self._clear_video_cards()
-
-        self.note.setText("Looking for tutorials...")
+        self.note.setText("Finding useful tutorials...")
+        self.video_count.clear()
 
         self._set_videos_visible(True)
 
     # --------------------------------------------------
-    # YouTube tutorial cards
+    # YouTube tutorials
     # --------------------------------------------------
 
     def set_tutorials(self, result: TutorialResult):
 
         self._search_url = result.search_url
-
         self._clear_video_cards()
+
+        count = len(result.videos)
+
+        self.video_count.setText(
+            f"{count} videos" if count else ""
+        )
 
         for video in result.videos:
 
             card = VideoCard(video)
 
-            item = QListWidgetItem()
-            item.setSizeHint(card.sizeHint())
-
-            self.videos.addItem(item)
-            self.videos.setItemWidget(item, card)
+            self.videos_layout.addWidget(card)
 
             card.clicked.connect(self._open_video)
 
@@ -319,27 +533,12 @@ class SidePanel(QWidget):
 
         if result.videos:
             self.note.setText(
-                result.message
-                or "Select a thumbnail to watch the video."
+                result.message or "Select a video to start watching."
             )
         else:
             self.note.setText(
-                result.message
-                or "No videos found. Try a YouTube search."
+                result.message or "No tutorials found."
             )
-
-    def _clear_video_cards(self):
-
-        # Cancel outstanding thumbnail requests
-        replies = list(self._thumbnail_replies)
-
-        self._thumbnail_replies.clear()
-
-        for reply in replies:
-            reply.abort()
-            reply.deleteLater()
-
-        self.videos.clear()
 
     # --------------------------------------------------
     # Thumbnail loading
@@ -347,18 +546,16 @@ class SidePanel(QWidget):
 
     def _load_thumbnail(self, video: Video, card: VideoCard):
 
-        # Use the API thumbnail or YouTube's fallback URL
         url = (
             video.thumbnail
             or f"https://i.ytimg.com/vi/{video.video_id}/mqdefault.jpg"
         )
 
         if not url.startswith("https://"):
-            card.thumbnail.setText("Thumbnail unavailable")
+            card.set_thumbnail(QPixmap())
             return
 
         request = QNetworkRequest(QUrl(url))
-
         reply = self._network.get(request)
 
         self._thumbnail_replies[reply] = card
@@ -385,16 +582,6 @@ class SidePanel(QWidget):
     # --------------------------------------------------
     # Actions
     # --------------------------------------------------
-
-    def _set_videos_visible(self, visible: bool):
-
-        for widget in (
-            self.videos_title,
-            self.videos,
-            self.note,
-            self.search_btn,
-        ):
-            widget.setVisible(visible)
 
     @staticmethod
     def _open_video(url: str):
