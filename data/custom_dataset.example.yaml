@@ -1,0 +1,7 @@
+# Example dataset file for scripts/train_custom.py
+path: /home/you/datasets/my_objects   # folder that contains images/ and labels/
+train: images/train
+val: images/val
+names:
+  0: energy_drink_can
+  1: soldering_iron

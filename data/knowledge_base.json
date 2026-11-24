@@ -1,0 +1,495 @@
+{
+  "entries": [
+    {
+      "label": "laptop",
+      "display_name": "Laptop",
+      "category": "electronics",
+      "summary": "A portable computer with a built-in screen, keyboard and battery.",
+      "steps": [
+        "Open the lid and press the power button.",
+        "Sign in with your account.",
+        "Connect to Wi-Fi from the network icon.",
+        "Save your work, then use Shut down before closing the lid."
+      ],
+      "cautions": [
+        "Do not block the air vents while it is running."
+      ],
+      "tutorial_queries": [
+        "how to use a laptop for beginners"
+      ],
+      "curated_videos": []
+    },
+    {
+      "label": "cell phone",
+      "display_name": "Phone",
+      "category": "electronics",
+      "summary": "A handheld device for calls, messages and apps.",
+      "steps": [
+        "Press and hold the side button to wake or power it on.",
+        "Unlock it with your PIN, fingerprint or face.",
+        "Open an app by tapping its icon.",
+        "Press the side button once to lock the screen."
+      ],
+      "cautions": [
+        "Keep it away from water unless it is rated for it."
+      ],
+      "tutorial_queries": [
+        "how to use a smartphone for beginners"
+      ],
+      "curated_videos": []
+    },
+    {
+      "label": "keyboard",
+      "display_name": "Keyboard",
+      "category": "electronics",
+      "summary": "An input device for typing text and giving shortcuts.",
+      "steps": [
+        "Connect it by USB cable or Bluetooth.",
+        "Place your fingers on the home row (F and J have small bumps).",
+        "Use Shift for capital letters and Ctrl with C and V to copy and paste.",
+        "Use Backspace to delete the last character."
+      ],
+      "cautions": [],
+      "tutorial_queries": [
+        "how to type properly keyboard basics"
+      ],
+      "curated_videos": []
+    },
+    {
+      "label": "mouse",
+      "display_name": "Mouse",
+      "category": "electronics",
+      "summary": "A pointing device that moves the cursor on the screen.",
+      "steps": [
+        "Connect it by USB receiver or Bluetooth and switch it on.",
+        "Move it on a flat surface to move the cursor.",
+        "Left-click to select or open, right-click for a menu.",
+        "Use the wheel to scroll."
+      ],
+      "cautions": [],
+      "tutorial_queries": [
+        "how to use a computer mouse for beginners"
+      ],
+      "curated_videos": []
+    },
+    {
+      "label": "remote",
+      "display_name": "Remote control",
+      "category": "electronics",
+      "summary": "A handheld controller for a TV or other device.",
+      "steps": [
+        "Check that it has working batteries.",
+        "Point it at the device and press the power button.",
+        "Use the arrow buttons and OK to move through menus.",
+        "Use the volume and channel buttons to adjust sound and channel."
+      ],
+      "cautions": [
+        "Never mix old and new batteries."
+      ],
+      "tutorial_queries": [
+        "how to use a tv remote control"
+      ],
+      "curated_videos": []
+    },
+    {
+      "label": "tv",
+      "display_name": "Television",
+      "category": "electronics",
+      "summary": "A screen for watching broadcasts, streaming and video inputs.",
+      "steps": [
+        "Plug it in and press the power button on the TV or remote.",
+        "Choose the input source (HDMI, antenna or app).",
+        "Connect to Wi-Fi to use streaming apps.",
+        "Adjust the volume and picture mode in Settings."
+      ],
+      "cautions": [
+        "Do not place it where it can tip over."
+      ],
+      "tutorial_queries": [
+        "how to set up a smart tv"
+      ],
+      "curated_videos": []
+    },
+    {
+      "label": "clock",
+      "display_name": "Clock",
+      "category": "household",
+      "summary": "A device for showing the time.",
+      "steps": [
+        "Find the time-set knob or button (analog) or the Set button (digital).",
+        "Turn or press until the correct time shows.",
+        "Set the alarm with the Alarm button if it has one.",
+        "Replace the battery when it runs slow or stops."
+      ],
+      "cautions": [],
+      "tutorial_queries": [
+        "how to set an analog clock"
+      ],
+      "curated_videos": []
+    },
+    {
+      "label": "bottle",
+      "display_name": "Bottle",
+      "category": "household",
+      "summary": "A container for carrying drinks.",
+      "steps": [
+        "Twist the cap anticlockwise to open it.",
+        "Fill it with the drink, leaving a small gap at the top.",
+        "Close the cap firmly until it clicks or stops turning.",
+        "Wash it regularly with warm soapy water."
+      ],
+      "cautions": [
+        "Do not fill a plastic bottle with very hot liquid unless it says it is heat safe."
+      ],
+      "tutorial_queries": [
+        "how to clean a water bottle"
+      ],
+      "curated_videos": []
+    },
+    {
+      "label": "cup",
+      "display_name": "Cup",
+      "category": "kitchen",
+      "summary": "A small open container for hot or cold drinks.",
+      "steps": [
+        "Check that it is clean and has no cracks.",
+        "Pour the drink, leaving space at the top.",
+        "Hold it by the handle and let hot drinks cool a little before sipping.",
+        "Wash it after use."
+      ],
+      "cautions": [
+        "Hot drinks can scald. Test the temperature first."
+      ],
+      "tutorial_queries": [
+        "how to make a cup of tea"
+      ],
+      "curated_videos": []
+    },
+    {
+      "label": "bowl",
+      "display_name": "Bowl",
+      "category": "kitchen",
+      "summary": "A deep dish for food or for mixing.",
+      "steps": [
+        "Wash it before first use.",
+        "Use it for serving or mixing ingredients.",
+        "Check that it is microwave safe before heating food in it.",
+        "Wash it after use."
+      ],
+      "cautions": [
+        "Hot bowls can burn your hands; use a cloth."
+      ],
+      "tutorial_queries": [
+        "microwave safe bowls how to tell"
+      ],
+      "curated_videos": []
+    },
+    {
+      "label": "fork",
+      "display_name": "Fork",
+      "category": "kitchen",
+      "summary": "A utensil with prongs for eating or lifting food.",
+      "steps": [
+        "Hold it in your hand like a pen, with the prongs pointing down.",
+        "Spear or scoop the food.",
+        "Bring it to your mouth and take the food off with your teeth.",
+        "Wash it after use."
+      ],
+      "cautions": [],
+      "tutorial_queries": [
+        "how to use cutlery properly"
+      ],
+      "curated_videos": []
+    },
+    {
+      "label": "knife",
+      "display_name": "Knife",
+      "category": "kitchen",
+      "summary": "A blade for cutting food.",
+      "steps": [
+        "Hold the handle firmly and curl the fingers of your other hand away from the blade.",
+        "Cut on a stable board with slow, controlled strokes.",
+        "Cut away from your body and never towards your hand.",
+        "Wash it by hand and store it with the blade protected."
+      ],
+      "cautions": [
+        "Sharp. Keep it away from children and never catch a falling knife."
+      ],
+      "tutorial_queries": [
+        "basic knife skills for beginners"
+      ],
+      "curated_videos": []
+    },
+    {
+      "label": "spoon",
+      "display_name": "Spoon",
+      "category": "kitchen",
+      "summary": "A utensil with a shallow bowl for eating, stirring and serving.",
+      "steps": [
+        "Hold the handle between thumb and fingers.",
+        "Scoop the food or liquid.",
+        "Bring it to your mouth and sip or eat from the side.",
+        "Wash it after use."
+      ],
+      "cautions": [],
+      "tutorial_queries": [
+        "how to use a spoon correctly"
+      ],
+      "curated_videos": []
+    },
+    {
+      "label": "microwave",
+      "display_name": "Microwave oven",
+      "category": "kitchen",
+      "summary": "An appliance that heats food using microwaves.",
+      "steps": [
+        "Put the food in a microwave-safe container and cover it loosely.",
+        "Close the door and set the time and power level.",
+        "Press Start and wait for the beep.",
+        "Use oven gloves and open the lid away from your face; steam is hot."
+      ],
+      "cautions": [
+        "Never put metal or foil inside. Do not run it empty."
+      ],
+      "tutorial_queries": [
+        "how to use a microwave oven safely"
+      ],
+      "curated_videos": []
+    },
+    {
+      "label": "oven",
+      "display_name": "Oven",
+      "category": "kitchen",
+      "summary": "An appliance for baking and roasting food.",
+      "steps": [
+        "Choose the temperature and mode, then let it preheat.",
+        "Place the food on a rack or tray using oven gloves.",
+        "Set a timer and check the food near the end of the time.",
+        "Turn it off and let it cool before cleaning."
+      ],
+      "cautions": [
+        "Surfaces and trays get very hot."
+      ],
+      "tutorial_queries": [
+        "how to use an oven for beginners"
+      ],
+      "curated_videos": []
+    },
+    {
+      "label": "toaster",
+      "display_name": "Toaster",
+      "category": "kitchen",
+      "summary": "An appliance that browns slices of bread.",
+      "steps": [
+        "Plug it in and set the browning dial to a medium level.",
+        "Put in the bread and push the lever down.",
+        "Wait for it to pop up and take the toast out carefully.",
+        "Empty the crumb tray regularly."
+      ],
+      "cautions": [
+        "Never push metal objects into a toaster."
+      ],
+      "tutorial_queries": [
+        "how to use a toaster"
+      ],
+      "curated_videos": []
+    },
+    {
+      "label": "refrigerator",
+      "display_name": "Refrigerator",
+      "category": "kitchen",
+      "summary": "An appliance that keeps food cold.",
+      "steps": [
+        "Keep the door closed as much as possible.",
+        "Put raw meat on the bottom shelf and ready foods higher up.",
+        "Cover or box leftovers before storing them.",
+        "Clean it and remove old food regularly."
+      ],
+      "cautions": [],
+      "tutorial_queries": [
+        "how to organize a refrigerator"
+      ],
+      "curated_videos": []
+    },
+    {
+      "label": "book",
+      "display_name": "Book",
+      "category": "household",
+      "summary": "A set of pages with text or pictures.",
+      "steps": [
+        "Look at the contents page to find the chapter you want.",
+        "Hold it open flat and read page by page.",
+        "Use a bookmark instead of folding the page corner.",
+        "Store it upright or flat, away from damp."
+      ],
+      "cautions": [],
+      "tutorial_queries": [
+        "how to take notes while reading a book"
+      ],
+      "curated_videos": []
+    },
+    {
+      "label": "scissors",
+      "display_name": "Scissors",
+      "category": "tools",
+      "summary": "A hand tool with two blades for cutting paper, cloth and thread.",
+      "steps": [
+        "Put your thumb and fingers through the handles.",
+        "Open the blades and place the material between them.",
+        "Close the blades smoothly to cut.",
+        "Close them and store them with the points covered."
+      ],
+      "cautions": [
+        "Sharp points. Pass them handle first."
+      ],
+      "tutorial_queries": [
+        "how to use scissors safely"
+      ],
+      "curated_videos": []
+    },
+    {
+      "label": "backpack",
+      "display_name": "Backpack",
+      "category": "personal",
+      "summary": "A bag carried on the back with two shoulder straps.",
+      "steps": [
+        "Put heavy items closest to your back.",
+        "Close all zips.",
+        "Wear both straps and adjust them so the bag sits high on your back.",
+        "Use the chest or waist strap if it has one."
+      ],
+      "cautions": [
+        "Do not carry more than about a tenth to a fifth of your body weight."
+      ],
+      "tutorial_queries": [
+        "how to pack and wear a backpack properly"
+      ],
+      "curated_videos": []
+    },
+    {
+      "label": "umbrella",
+      "display_name": "Umbrella",
+      "category": "personal",
+      "summary": "A folding canopy that protects you from rain or sun.",
+      "steps": [
+        "Hold the handle and push the slider or press the button to open.",
+        "Hold it slightly in front of you into the wind.",
+        "Shake off the water and close it fully.",
+        "Let it dry open before storing it."
+      ],
+      "cautions": [
+        "Do not use it in lightning or strong wind."
+      ],
+      "tutorial_queries": [
+        "how to use an umbrella"
+      ],
+      "curated_videos": []
+    },
+    {
+      "label": "handbag",
+      "display_name": "Handbag",
+      "category": "personal",
+      "summary": "A bag for carrying small personal items.",
+      "steps": [
+        "Open the zip or clasp.",
+        "Keep valuables in an inner pocket.",
+        "Carry it on the shoulder or in the hand.",
+        "Close it fully when in crowded places."
+      ],
+      "cautions": [],
+      "tutorial_queries": [
+        "how to organize a handbag"
+      ],
+      "curated_videos": []
+    },
+    {
+      "label": "suitcase",
+      "display_name": "Suitcase",
+      "category": "personal",
+      "summary": "A case with wheels for carrying clothes while travelling.",
+      "steps": [
+        "Open it flat and place heavy items near the wheels.",
+        "Roll clothes to save space.",
+        "Close the zip and lock it if it has a lock.",
+        "Pull up the handle and roll it behind you."
+      ],
+      "cautions": [
+        "Check the airline's weight limit before you travel."
+      ],
+      "tutorial_queries": [
+        "how to pack a suitcase efficiently"
+      ],
+      "curated_videos": []
+    },
+    {
+      "label": "vase",
+      "display_name": "Vase",
+      "category": "household",
+      "summary": "A container for displaying flowers.",
+      "steps": [
+        "Fill it about two thirds with clean water.",
+        "Cut the flower stems at an angle.",
+        "Place the flowers in the water and arrange them.",
+        "Change the water every two days."
+      ],
+      "cautions": [],
+      "tutorial_queries": [
+        "how to arrange flowers in a vase"
+      ],
+      "curated_videos": []
+    },
+    {
+      "label": "chair",
+      "display_name": "Chair",
+      "category": "household",
+      "summary": "A seat for one person.",
+      "steps": [
+        "Check that it is stable on all legs.",
+        "Sit back with your feet flat on the floor.",
+        "Adjust height and backrest if it has levers.",
+        "Do not tilt it on two legs."
+      ],
+      "cautions": [],
+      "tutorial_queries": [
+        "how to adjust an office chair"
+      ],
+      "curated_videos": []
+    },
+    {
+      "label": "toothbrush",
+      "display_name": "Toothbrush",
+      "category": "personal",
+      "summary": "A brush for cleaning teeth.",
+      "steps": [
+        "Wet it and add a pea-sized amount of toothpaste.",
+        "Brush all surfaces gently in small circles for two minutes.",
+        "Spit out the toothpaste and rinse your mouth.",
+        "Rinse the brush and replace it every three months."
+      ],
+      "cautions": [],
+      "tutorial_queries": [
+        "how to brush your teeth correctly"
+      ],
+      "curated_videos": []
+    },
+    {
+      "label": "energy_drink_can",
+      "display_name": "Energy drink can",
+      "category": "kitchen",
+      "summary": "A sealed drink can. (Appears after you fine-tune a custom 'energy_drink_can' class.)",
+      "steps": [
+        "Check the date and that the can is not dented or swollen.",
+        "Pull the tab up and back to open it.",
+        "Sip slowly and read the label for the serving size.",
+        "Recycle the empty can."
+      ],
+      "cautions": [
+        "Energy drinks contain a lot of caffeine. Do not give them to children and limit how much you drink."
+      ],
+      "tutorial_queries": [
+        "energy drink caffeine facts"
+      ],
+      "curated_videos": []
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+# FieldGuide settings. Relative paths are resolved from this file's folder.
+
+[camera]
+index = 0            # which webcam (0 = first)
+width = 1280
+height = 720
+
+[detector]
+model = "yolo11n.pt"  # downloaded automatically on first run; use your own best.pt after fine-tuning
+imgsz = 416           # smaller = faster, larger = more accurate on small objects
+conf = 0.50           # detections below this score are hidden (also the UI slider)
+iou = 0.70
+max_det = 20
+device = "auto"       # "auto", "cpu", "cuda:0", "mps"
+
+[tracking]
+tracker = "bytetrack.yaml"
+stable_frames = 6     # frames an object must persist before it can be selected
+label_window = 10     # frames used for label voting
+switch_ratio = 1.2    # a new label must lead by 20% to replace the shown one
+lost_frames = 30      # forget a track after this many frames unseen
+box_smoothing = 0.6   # 1.0 = no smoothing, lower = smoother boxes
+
+[guidance]
+knowledge_base = "data/knowledge_base.json"
+skip_labels = ["person"]   # boxes are shown, but no instructions are given for these
+
+[tutorials]
+api_key_env = "YOUTUBE_API_KEY"   # name of the environment variable that holds your key
+max_results = 5
+cache_days = 7
+language = "en"
+cache_db = "data/cache.sqlite3"
+
+[ui]
+voice = false
