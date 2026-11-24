@@ -2,6 +2,5 @@ ultralytics>=8.3
 opencv-python>=4.9
 PySide6>=6.6
 numpy>=1.26
-pyttsx3>=2.90      # optional: spoken instructions
-pytest>=8.0        # only needed to run the tests
+pytest>=8.0
 python-dotenv>=1.0
