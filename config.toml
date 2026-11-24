@@ -33,4 +33,4 @@ language = "en"
 cache_db = "data/cache.sqlite3"
 
 [ui]
-voice = false
+voice = true
